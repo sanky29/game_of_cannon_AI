@@ -233,6 +233,7 @@ class environment{
 			else{
 				//just go on end location
 				if(board[action[3]][action[4]] == current_player*(-1)){
+					 
 					
 					//the index of value can be find by iterator at that
 					vector<int> y = vector<int>({action[3], action[4]});
@@ -270,6 +271,7 @@ class environment{
 						}
 					}
 				}
+				
 				//check the action as followa
 				//this is just bombarding
 				if(action[2] == 1){
@@ -279,7 +281,6 @@ class environment{
 				}
 				//else if we just have movement we have to see new things
 				else{
-					
 					//just change the board position as
 					board[action[3]][action[4]]  = -1;
 					board[action[0]][action[1]]  = 0;
@@ -291,14 +292,13 @@ class environment{
 					//just delete the element and add new position of soldier
 					opp_soldiers.erase(find(opp_soldiers.begin(), opp_soldiers.end(),x));
 					opp_soldiers.push_back(vector<int>({action[3], action[4]}));
-					
+
 					//just change cannon of the our team
 					//use temporary vector
 					vector<int> temp2;
 					//the int i keeps track of elements deleted
 					int i = 0;
 					for(int j = 0; j < opp_cannon.size(); j++){
-						
 						//update temp
 						temp2 = opp_cannon[j-i];
 						//check for possible things
@@ -323,7 +323,6 @@ class environment{
 					
 						//to find new cannon just iterate over all directions
 					for(int i = -1; i < 3; i++){
-						
 						//now if i = 2 it is verticle then
 						if (i == 2){
 							//just run for loop as
@@ -395,6 +394,7 @@ class environment{
 				p = 1;
 				o = -1;
 				c = color;
+			
 			}
 			
 			else{
@@ -405,6 +405,7 @@ class environment{
 				p = -1;
 				o = 1;
 				c = -1*color;
+				
 			}
 			
 			//work on soldier
@@ -775,28 +776,31 @@ void spa(environment e){
 	}
 	
 }
-int main(){
-	int temp = 0;
-	vector<int> y;
+environment create(){
 	int chance, n,m;
 	int t;
 	cin >> chance>>n>>m>>t;
-	environment e = environment(n,m,chance, (float)t);
-	while(temp < t){
+	environment e = environment(8,8,1,90.0);
+	return(e);
+}
+int main(){
+	int temp = 0;
+	vector<int> y;
+	environment e = create();
+	char a1,a2;
+	int x0,y0,x1,y1;
+	while(temp < e.time_left){
 		if(e.current_player == -1){
-			cout << "i am here"<<endl;
-			char a1,a2;
-			int x0,y0,x1,y1;string inpline;
-			cin>>a1;cin>>x0;cin>>y0;cin>>a2;cin>>x1;cin>>y1;
-			cout << a1;
+			cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
 				e.take_action(vector<int>({x0,y0,0,x1,y1}));
 			}
-			else if (a2 == 'S'){
+			else{
 				e.take_action(vector<int>({x0,y0,1,x1,y1}));
 			}
 		}
 		else{
+			
 			time_t t0 = time(NULL);
 			y = e.possible_moves()[0];
 			e.take_action(y);
@@ -808,8 +812,8 @@ int main(){
 			}
 			time_t t1 = time(NULL);
 			temp = temp + t1 - t0; 
-			cout << temp<<endl;
 		}
 	}
+
 		
 }
