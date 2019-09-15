@@ -780,7 +780,9 @@ environment create(){
 	int chance, n,m;
 	int t;
 	cin >> chance>>n>>m>>t;
-	environment e = environment(8,8,1,90.0);
+	float p = 2*(1.5 - chance);
+	chance = (int) p;
+	environment e = environment(n,m,chance,(float) t);
 	return(e);
 }
 int main(){
