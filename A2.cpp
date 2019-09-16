@@ -485,15 +485,13 @@ class environment{
 					//forward move
 					if((y-5)*(y+2) <= 0 && board[x][y+2] == 0){
 						//just add the element to ans
-						
+						ans.push_back({x,y-1,0,x,y+2});
 						//add attack action
 						if((y-4)*(y+3) <= 0 && board[x][y+3] != p && board[x][y+3] != p*2){
 							//just add the element to ans
 							ans.push_back({x,y+1,1,x,y+3});
-								if(board[x][y+3] == 0){
-								
-								ans.push_back({x,y+1,0,x,y+3});
-							}
+			
+						
 						}
 						//add attack action
 						if((y-3)*(y+4) <= 0 && board[x][y+4] != p && board[x][y+4] != 2*p){
@@ -505,15 +503,13 @@ class environment{
 						if((y-9)*(y-2) <= 0 && board[x][y-2] == 0){
 							//just add the element to ans
 							
-							
+								ans.push_back({x,y+1,0,x,y-2});
 							//add attack action
 							if((y-10)*(y-3) <= 0 && board[x][y-3] != p && board[x][y-3] != 2*p){
 								//just add the element to ans
-								ans.push_back({x,y-1,1,x,y-3});
-								if(board[x][y-3] == 0){
-								
-								ans.push_back({x,y+1,0,x,y-3});
-							}}
+								ans.push_back({x,y-1,1,x,y-3});	
+							
+							}
 							//add attack action
 							if((y-11)*(y-4) <= 0 && board[x][y-4] != p && board[x][y-4] != 2*p){
 								//just add the element to ans
