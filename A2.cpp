@@ -490,7 +490,7 @@ class environment{
 						if((y-4)*(y+3) <= 0 && board[x][y+3] != p && board[x][y+3] != p*2){
 							//just add the element to ans
 							ans.push_back({x,y+1,1,x,y+3});
-								if(board[x][y+3] != o && board[x][y+3] != 2*o){
+								if(board[x][y+3] == 0){
 								
 								ans.push_back({x,y+1,0,x,y+3});
 							}
@@ -510,7 +510,7 @@ class environment{
 							if((y-10)*(y-3) <= 0 && board[x][y-3] != p && board[x][y-3] != 2*p){
 								//just add the element to ans
 								ans.push_back({x,y-1,1,x,y-3});
-								if(board[x][y-3] != o && board[x][y-3] != 2*o){
+								if(board[x][y-3] == 0){
 								
 								ans.push_back({x,y+1,0,x,y-3});
 							}}
