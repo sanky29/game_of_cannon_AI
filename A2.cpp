@@ -227,7 +227,7 @@ class environment{
 							for(int j = -2; j < 1 ; j++){
 								if(action[3] - j <= 7 && action[3] - j -2>= 0 && action[4] + j >= 0 && action[4] + j + 2 <= 7){
 									if(board[action[3]-j][action[4] + j] == 1 && board[action[3]-j-1][action[4] + j+1] == 1 && board[action[3]-j-2][action[4] + j+2] == 1){
-										our_cannon.push_back(vector<int>({action[3]-j-1, action[4]+j+1, 1}));
+										our_cannon.push_back(vector<int>({action[3]-j-1, action[4]+j+1, -1}));
 									}
 								}
 							}	
@@ -368,7 +368,7 @@ class environment{
 							for(int j = -2; j < 1 ; j++){
 								if(action[3] - j <= 7 && action[3] - j - 2>= 0 && action[4] + j >= 0 && action[4] + j + 2 <= 7){
 									if(board[action[3]-j][action[4] + j] == -1 && board[action[3]-j-1][action[4] + j+1] == -1 && board[action[3]-j-2][action[4] + j+2] == -1){
-										opp_cannon.push_back(vector<int>({action[3]-j-1, action[4]+j+1, 1}));
+										opp_cannon.push_back(vector<int>({action[3]-j-1, action[4]+j+1, -1}));
 									}
 								}
 							}	
@@ -869,7 +869,7 @@ int main(){
 	char a1,a2;
 	int x0,y0,x1,y1;
 	while(temp < e.time_left){
-		render(e);
+		
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
