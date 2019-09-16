@@ -253,25 +253,25 @@ class environment{
 					vector<int> temp;
 					//the int i keeps track of elements deleted
 					int i = 0;
-					for(int j = 0; j < opp_cannon.size(); j++){
+					for(int j = 0; j < our_cannon.size(); j++){
 						
 						//update temp
-						temp = opp_cannon[j-i];
+						temp = our_cannon[j-i];
 						//check for possible things
 						if (temp[2] == 2 && temp[0] == action[3] && (temp[1] - action[4])*(temp[1] - action[4]) <= 1){
 							
-							opp_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(opp_cannon.begin() + j - i);
 							i++;
 							
 						}
 						else if (temp[2] == 0 && temp[1] == action[4] && (temp[0] - action[3])*(temp[0] - action[3]) <= 1){
 							
-							opp_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(opp_cannon.begin() + j - i);
 							i++;	
 						}
 						else if ((temp[2] == 1 || temp[2]==-1) && (temp[1] - action[4])*(temp[1] - action[4]) <= 1 && (temp[0] - action[3])*(temp[0] - action[3]) <= 1){
 							
-							opp_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(opp_cannon.begin() + j - i);
 							i++;
 							
 						}
@@ -456,17 +456,17 @@ class environment{
 				 || ((x -6)*(x + 1 )<= 0 && (y -7 +c)*(y + c ) <= 0 && board[x+1][y+c] == o)||((x -8)*(x - 1 )<= 0 && (y -7 +c)*(y + c )<= 0 && board[x-1][y+c] == o)){
 				 	
 					//neeed to check the backward conditions
-					if((y-7 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p || board[x][y-2*c] != 2*p)){
+					if((y-7 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p && board[x][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x,y-2*c}));			
 					}
 					//the diagonal condition backward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-2*c] != p || board[x-2][y-2*c] != 2*p)){
+					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-2*c] != p && board[x-2][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x-2,y-2*c}));
 					}
 					//the diagonal condition forward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-2*c] != p || board[x+2][y-2*c] != 2*p)){
+					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-2*c] != p && board[x+2][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x+2,y-2*c}));
 					}
@@ -628,15 +628,15 @@ class environment{
 			vector<vector<float> > score;
 			//for 
 		
-			score = vector< vector<float> >(8 , vector<float>(8, -1*0.01));
-			score[0][0] = -1;
-			score[2][0] = -1;
-			score[4][0] = -1;
-			score[6][0] = -1;
-			score[1][7] = -1;
-			score[3][7] = -1;
-			score[5][7] = -1;
-			score[7][7] = -1;
+			score = vector< vector<float> >(8 , vector<float>(8, 1*0.01));
+			score[0][0] = 1;
+			score[2][0] = 1;
+			score[4][0] = 1;
+			score[6][0] = 1;
+			score[1][7] = 1;
+			score[3][7] = 1;
+			score[5][7] = 1;
+			score[7][7] = 1;
 	
 			//just do the dot product
 			for (int i = 0; i < ans.size(); i++){
@@ -869,6 +869,7 @@ int main(){
 	char a1,a2;
 	int x0,y0,x1,y1;
 	while(temp < e.time_left){
+		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
