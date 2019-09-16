@@ -456,19 +456,19 @@ class environment{
 				 || ((x -6)*(x + 1 )<= 0 && (y -7 +c)*(y + c ) <= 0 && board[x+1][y+c] == o)||((x -8)*(x - 1 )<= 0 && (y -7 +c)*(y + c )<= 0 && board[x-1][y+c] == o)){
 				 	
 					//neeed to check the backward conditions
-					if((y-7 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p || board[x][y-2*c] != 2*p)){
+					if((y-7 - 3*c)*(y - 3*c) <= 0 && (board[x][y-3*c] != p || board[x][y-3*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x,y-2*c}));			
+						ans.push_back(vector<int>({x,y,0,x,y-3*c}));			
 					}
 					//the diagonal condition backward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-2*c] != p || board[x-2][y-2*c] != 2*p)){
+					if((y-7 - 3*c)*(y-3*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-3*c] != p || board[x-2][y-3*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x-2,y-2*c}));
+						ans.push_back(vector<int>({x,y,0,x-2,y-3*c}));
 					}
 					//the diagonal condition forward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-2*c] != p || board[x+2][y-2*c] != 2*p)){
+					if((y-7 - 3*c)*(y-3*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-3*c] != p || board[x+2][y-3*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x+2,y-2*c}));
+						ans.push_back(vector<int>({x,y,0,x+2,y-3*c}));
 					}
 				}
 			}
@@ -867,7 +867,6 @@ int main(){
 	char a1,a2;
 	int x0,y0,x1,y1;
 	while(temp < e.time_left){
-		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
