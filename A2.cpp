@@ -32,6 +32,12 @@ the vector of cannon:
 */
 #include<bits/stdc++.h>
 using namespace std;
+		
+//the helper function for sorting
+bool sortdesc(tuple<float, vector<int> > a, tuple<float,  vector<int> > b) { 
+    		
+	return (get<0>(a) > get<0>(b)); 
+}
 class environment{
 	
 	public:
@@ -372,12 +378,12 @@ class environment{
 			}
 			current_player = -1*current_player;
 		}	
-		
+
 		/*   --------------|THE POSSIBLE MOVEMENTS|-------------------------  
 		 */      
 		                                 
 		//define function to give vector of possible movements
-		vector< vector<int> > possible_moves(){
+		vector<tuple<float, vector<int> > > possible_moves(){
 			
 			//the ans vector
 			vector< vector<int> > ans;
@@ -614,7 +620,46 @@ class environment{
 					}
 				}
 			}  
-			return(ans);
+			//the final vector
+			vector <tuple<float, vector<int> > >ansf;
+			//now need to go for best actions
+			vector<vector<float> > score;
+			//for 
+		
+			score = vector< vector<float> >(8 , vector<float>(8, -1*0.01));
+			score[0][0] = -1;
+			score[2][0] = -1;
+			score[4][0] = -1;
+			score[6][0] = -1;
+			score[1][7] = -1;
+			score[3][7] = -1;
+			score[5][7] = -1;
+			score[7][7] = -1;
+	
+			//just do the dot product
+			for (int i = 0; i < ans.size(); i++){
+				vector< vector<int> > temp2 = board;
+				if(ans[i][2] == 0){
+					temp2[ans[i][0]][ans[i][1]] = 0;
+					temp2[ans[i][3]][ans[i][4]] = current_player;
+				}
+				else{
+					temp2[ans[i][3]][ans[i][4]] = 0;
+				}
+				float temp = 0.0;
+				for (int j = 0 ; j < 8 ; j++){
+					for(int k = 0; k < 8 ; k++){
+						temp = temp + temp2[j][k]*score[j][k];
+					}
+				}
+				ansf.push_back(make_tuple(temp, ans[i]));
+			}
+			if (current_player == 1){
+			sort(ansf.begin(), ansf.end(), sortdesc);}
+			else{
+			sort(ansf.begin(), ansf.end());	
+			}
+			return(ansf); 
 		}
 	
 			
@@ -662,12 +707,13 @@ class environment{
 			}
 		}
 	}
+	environment(){
+	}
 	
 };
 
 //the node of search tree is as follows
-//it will consist of same elements as environment so i will store just the environmnet
-
+//it will consist of same elements as environment so i will store just the environmnet 
 class node{
 	
 	//the environment
@@ -676,12 +722,40 @@ class node{
 	//the parent
 	node* parent;
 	
+	//the number of visited 
+	int visited;
+	
 	//the alpha and beta value
 	float alpha;
 	float beta;
 	
+	//the optimal action till now
+	vector<int> action;
+	
+	//the score of the node
+	float score;
+	
 	//the childrens of node are as
-	vector<node*> children;
+	vector<tuple<vector <int>, node*> > children;
+	
+	//the constructor is
+	node(environment env){
+		element = env;
+		visited = 0;
+		alpha = FLT_MIN;
+		beta = FLT_MAX;
+		score = 0.0;
+	}
+	
+	//the constructor is
+	node(environment env, node* p){
+		element = env;
+		parent = p;
+		visited = 0;
+		alpha = (*p).alpha;
+		beta = (*p).beta;
+		score = 0.0;
+	}
 };
 
 	
@@ -758,19 +832,19 @@ void information(environment e){
 }
 
 void spa(environment e){
-	vector< vector<int> > ans = e.possible_moves();
+	vector<tuple<float ,vector<int> > > ans = e.possible_moves();
 	cout << "------------------------------------------------------------------------------"<<endl;
 	cout << "|                      THE POSSIBLE MOVES FOR PLAYER "<<e.current_player<<"                   |"<<endl;
 	cout << "------------------------------------------------------------------------------"<<endl;
 	cout << "| T | X | Y | T | X | Y |"<<endl;
 	cout << "-------------------------"<<endl;
 		for (int i = 0; i < ans.size(); i++){
-		cout <<"| S |"<<ans[i][0] << " | "<<ans[i][1]<<" | ";
-		if(ans[i][2] == 1){
-			cout << "B |"<< ans[i][3] <<" | "<< ans[i][4] <<" |"<<endl;
+		cout <<"| S |"<<get<1>(ans[i])[0] << " | "<<get<1>(ans[i])[1]<<" | ";
+		if(get<1>(ans[i])[2] == 1){
+			cout << "B |"<< get<1>(ans[i])[3] <<" | "<< get<1>(ans[i])[4] <<" |"<<endl;
 		}
 		else{
-			cout << "M |"<< ans[i][3] <<" | "<< ans[i][4] <<" |"<<endl;
+			cout << "M |"<< get<1>(ans[i])[3] <<" | "<< get<1>(ans[i])[4] <<" |"<<endl;
 		}
 		cout <<"-------------------------"<<endl;
 	}
@@ -785,6 +859,7 @@ environment create(){
 	environment e = environment(n,m,chance,(float) t);
 	return(e);
 }
+
 int main(){
 	int temp = 0;
 	vector<int> y;
@@ -792,8 +867,9 @@ int main(){
 	char a1,a2;
 	int x0,y0,x1,y1;
 	while(temp < e.time_left){
+		render(e);
 		if(e.current_player == -1){
-			cin>>a1>>x0>>y0>>a2>>x1>>y1;
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
 				e.take_action(vector<int>({x0,y0,0,x1,y1}));
 			}
@@ -804,7 +880,7 @@ int main(){
 		else{
 			
 			time_t t0 = time(NULL);
-			y = e.possible_moves()[0];
+			y = get<1>(e.possible_moves()[0]);
 			e.take_action(y);
 			if (y[2] == 0){
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
@@ -817,5 +893,10 @@ int main(){
 		}
 	}
 
-		
+	/*vector< tuple<float, vector<int> > > demo;
+	demo.push_back(make_tuple(0.8, vector<int>({1,2,3})));
+	demo.push_back(make_tuple(0.1, vector<int>({4,5,6})));
+	sort(demo.begin(), demo.end(), sortdesc);
+	cout << get<0>(demo[0]);*/
+
 }
