@@ -456,19 +456,19 @@ class environment{
 				 || ((x -6)*(x + 1 )<= 0 && (y -7 +c)*(y + c ) <= 0 && board[x+1][y+c] == o)||((x -8)*(x - 1 )<= 0 && (y -7 +c)*(y + c )<= 0 && board[x-1][y+c] == o)){
 				 	
 					//neeed to check the backward conditions
-					if((y-7 - 3*c)*(y - 3*c) <= 0 && (board[x][y-3*c] != p || board[x][y-3*c] != 2*p)){
+					if((y-7 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p || board[x][y-2*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x,y-3*c}));			
+						ans.push_back(vector<int>({x,y,0,x,y-2*c}));			
 					}
 					//the diagonal condition backward
-					if((y-7 - 3*c)*(y-3*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-3*c] != p || board[x-2][y-3*c] != 2*p)){
+					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-2*c] != p || board[x-2][y-2*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x-2,y-3*c}));
+						ans.push_back(vector<int>({x,y,0,x-2,y-2*c}));
 					}
 					//the diagonal condition forward
-					if((y-7 - 3*c)*(y-3*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-3*c] != p || board[x+2][y-3*c] != 2*p)){
+					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-2*c] != p || board[x+2][y-2*c] != 2*p)){
 						//just add the given action to ans
-						ans.push_back(vector<int>({x,y,0,x+2,y-3*c}));
+						ans.push_back(vector<int>({x,y,0,x+2,y-2*c}));
 					}
 				}
 			}
@@ -485,12 +485,15 @@ class environment{
 					//forward move
 					if((y-5)*(y+2) <= 0 && board[x][y+2] == 0){
 						//just add the element to ans
-						ans.push_back({x,y-1,0,x,y+2});
 						
 						//add attack action
 						if((y-4)*(y+3) <= 0 && board[x][y+3] != p && board[x][y+3] != p*2){
 							//just add the element to ans
 							ans.push_back({x,y+1,1,x,y+3});
+								if(board[x][y+3] != o && board[x][y+3] != 2*o){
+								
+								ans.push_back({x,y+1,0,x,y+3});
+							}
 						}
 						//add attack action
 						if((y-3)*(y+4) <= 0 && board[x][y+4] != p && board[x][y+4] != 2*p){
@@ -501,13 +504,16 @@ class environment{
 						//backward move
 						if((y-9)*(y-2) <= 0 && board[x][y-2] == 0){
 							//just add the element to ans
-							ans.push_back({x,y+1,0,x,y-2});
+							
 							
 							//add attack action
 							if((y-10)*(y-3) <= 0 && board[x][y-3] != p && board[x][y-3] != 2*p){
 								//just add the element to ans
 								ans.push_back({x,y-1,1,x,y-3});
-							}
+								if(board[x][y-3] != o && board[x][y-3] != 2*o){
+								
+								ans.push_back({x,y+1,0,x,y-3});
+							}}
 							//add attack action
 							if((y-11)*(y-4) <= 0 && board[x][y-4] != p && board[x][y-4] != 2*p){
 								//just add the element to ans
