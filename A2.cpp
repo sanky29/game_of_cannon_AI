@@ -845,10 +845,7 @@ void spa(environment e){
 	
 }
 int d;
-int qo = 0;
 void search(node* f){
-	qo = qo + 1;
-	cout << qo<<endl;
 	//cout << root->action.size()<<" "<<qo<<" "<< (f->depth) <<" "<< (f->visited) << " " <<f->element.current_player<<endl;
 	if(f->beta >= f->alpha){
 		
