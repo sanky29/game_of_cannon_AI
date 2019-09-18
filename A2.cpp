@@ -937,8 +937,7 @@ int main(){
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
 	environment e = environment(n,m,chance);
-	/*for(int h = 0; h < 5 ; h++){
-		render(e);
+	for(int h = 0; h < 5 ; h++){
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
@@ -958,9 +957,8 @@ int main(){
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
 			}
 		}
-	}*/
+	}
 	while(temp < t){
-		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
@@ -976,7 +974,7 @@ int main(){
 			//y = get<1>(e.possible_moves()[0]);
 			node r = node(e);
 			root = &r;
-			d = 3;
+			d = 2;
 			search(root);
 			y = (*root).action;
 			e.take_action(y);
