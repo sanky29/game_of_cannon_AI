@@ -56,23 +56,14 @@ class environment{
 		//define 2d vector of our soldiers
 		vector< vector<int> > our_soldiers;
 		
-		//define 2d vector of our townhall
-		vector< vector<int> > our_townhall;
-		
 		//define 2d vector of our soldiers
 		vector< vector<int> > opp_soldiers;
-		
-		//define 2d vector of our townhall
-		vector< vector<int> > opp_townhall;
 		
 		//define 2d vector of our cannon
 		vector< vector<int> > our_cannon;
 		
 		//define 2d vector of opp cannon
 		vector< vector<int> > opp_cannon;
-		
-		//the time left
-		float time_left;
 		
 		/*write function to take move
 		the move is of 6 length with 
@@ -240,7 +231,7 @@ class environment{
 				//just go on end location
 				if(board[action[3]][action[4]] == current_player*(-1)){
 					 
-					
+				
 					//the index of value can be find by iterator at that
 					vector<int> y = vector<int>({action[3], action[4]});
 
@@ -260,18 +251,18 @@ class environment{
 						//check for possible things
 						if (temp[2] == 2 && temp[0] == action[3] && (temp[1] - action[4])*(temp[1] - action[4]) <= 1){
 							
-							our_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(our_cannon.begin() + j - i);
 							i++;
 							
 						}
 						else if (temp[2] == 0 && temp[1] == action[4] && (temp[0] - action[3])*(temp[0] - action[3]) <= 1){
 							
-							our_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(our_cannon.begin() + j - i);
 							i++;	
 						}
 						else if ((temp[2] == 1 || temp[2]==-1) && (temp[1] - action[4])*(temp[1] - action[4]) <= 1 && (temp[0] - action[3])*(temp[0] - action[3]) <= 1){
 							
-							our_cannon.erase(opp_cannon.begin() + j - i);
+							our_cannon.erase(our_cannon.begin() + j - i);
 							i++;
 							
 						}
@@ -668,10 +659,9 @@ class environment{
 		/*   --------------|THE CONSTRUCTOR|-------------------------  
 		 */
 		//the environment takes the board size n*m and the first chance and float time value
-		environment(int n, int m, int chance, float t){
+		environment(int n, int m, int chance){
 			
 			current_player = chance;
-			time_left = t;
 			board.assign(n, vector<int>(m,0));
 			if (chance == 1){
 				color = -1;
@@ -746,7 +736,7 @@ class node{
 		
 		//the childrens of node are as
 		vector<node*> children;
-		
+
 		//the constructor is
 		node(environment env, node *p, vector<int> ac){
 			element = env;
@@ -763,8 +753,8 @@ class node{
 		node(environment env){
 			element = env;
 			visited = 0;
-			alpha = FLT_MIN;
-			beta = FLT_MAX;
+			alpha = -10000000;
+			beta = 10000000;
 			score = 0.0;
 			depth = 0;
 		}
@@ -797,81 +787,6 @@ void render(environment e){
 		cout <<"|"<<endl<< "--------------------------"<<endl;
 	}
 }
-
-void search(node &e, int d){
-	node* f = &e;
-	if(e.beta > e.alpha){
-		
-		if (e.depth < d){
-			
-			if (e.visited < e.children.size() && e.visited != 0){
-				
-				f->visited = f->visited + 1;
-				search(*(f->children[f->visited]), d);
-			}
-			else if (e.visited == 0){
-				f->children = vector<node*>();
-				vector<tuple<float , vector<int> > >temp = e.element.possible_moves();
-				
-				for(int i = 0; i < temp.size(); i++){
-					environment temp2 = e.element;
-					temp2.take_action(get<1>(temp[i]));
-					node temp3 = node(temp2, &e, get<1>(temp[i]));
-					f->children.push_back(&temp3);
-				}
-				
-				f->visited = 1;
-				render(f->children[1]->element);
-				cout << "i am here";
-				search( *(f->children[0]), d);
-			}
-		
-			else if (e.visited == e.children.size()){
-				//change in parent
-				if (&e != root){
-					if ((*(e.parent)).element.current_player == 1){
-						if (e.score > (*(e.parent)).score){
-							f->parent->score = e.score;
-							(*(e.parent)).alpha = e.score;
-							(*(e.parent)).action = e.pa;
-						}
-					}
-					else{
-						if (e.score < (*(e.parent)).score){
-							(*(e.parent)).score = e.score;
-							(*(e.parent)).beta = e.score;
-							(*(e.parent)).action = e.pa;
-						}
-					}
-					search(*(f->parent),d);
-				}
-			}
-		}
-		else if (e.depth == d){
-			vector<tuple<float , vector<int> > >temp = f->element.possible_moves();
-			f->score = get<0>(temp[0]);
-			if (f->parent->element.current_player == 1){
-						if (f->score >= f->parent->score){
-							f->parent->score = e.score;
-							f->parent->alpha = e.score;
-							f->parent->action = e.pa;
-						}
-					}
-					else {
-						if (f->score <= f->parent->score){
-							f->parent->score = e.score;
-							f->parent->beta = e.score;
-							f->parent->action = e.pa;
-						}
-					}
-		}
-	}
-	else{
-		
-	}
-}
-
-
 
 void information(environment e){
 	cout << "------------------------------------------------------------------------------"<<endl;
@@ -929,24 +844,126 @@ void spa(environment e){
 	}
 	
 }
-environment create(){
+int d;
+int qo = 0;
+void search(node* f){
+	qo = qo + 1;
+	cout << qo<<endl;
+	//cout << root->action.size()<<" "<<qo<<" "<< (f->depth) <<" "<< (f->visited) << " " <<f->element.current_player<<endl;
+	if(f->beta >= f->alpha){
+		
+		if (f->depth < d){
+			if (f->visited < f->children.size() && f->visited != 0){
+				
+				f->visited += 1;
+				search(f->children[f->visited - 1]);
+			}
+			else if (f->visited == 0){
+				f->children = vector<node*>();
+				vector<tuple<float , vector<int> > >temp = (f->element).possible_moves();
+			
+				for(int i = 0; i < temp.size(); i++){
+						
+					environment *temp2 = new environment();
+					*temp2 = f->element;
+					(*temp2).take_action(get<1>(temp[i]));
+					node *temp3 =new node(*temp2, f, get<1>(temp[i]));
+					f->children.push_back(temp3);
+				}
+				f->visited = 1;
+				search(f->children[0]);
+			}
+		
+			else if (f->visited == f->children.size()){
+				//change in parent
+				if (f != root){
+					if (f->parent->element.current_player == 1){
+						if (f->score >= f->parent->score){
+							f->parent->score = f->score;
+							f->parent->alpha = f->score;
+							f->parent->action = f->pa;
+						}
+					}
+					else{
+						if (f->score <= f->parent->score){
+							f->parent->score = f->score;
+							f->parent->beta = f->score;
+							f->parent->action = f->pa;
+						}
+					}
+					search(f->parent);
+					delete f; //freed memory
+					f = NULL;
+				}
+			}
+		}
+		else if (f->depth == d){
+			f->score = get<0>((f->element.possible_moves())[0]);
+			
+			if (f->parent->element.current_player == 1){
+						if (f->score >= f->parent->score){
+							f->parent->score = f->score;
+							f->parent->alpha = f->score;
+							f->parent->action = f->pa;	
+						}
+					}
+					else {
+						
+						if (f->score <= f->parent->score){
+							f->parent->score = f->score;
+							f->parent->beta = f->score;
+							f->parent->action = f->pa;
+						}
+					}
+					search(f->parent);
+					delete f; //freed memory
+					f = NULL;
+		}
+	}
+	else{
+		delete f; //freed memory
+		f = NULL;
+	}
+}
+
+
+
+
+int main(){
+	int temp = 0;
+	vector<int> y;
+	char a1,a2;
+	int x0,y0,x1,y1;
 	int chance, n,m;
 	int t;
 	cin >> chance>>n>>m>>t;
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
-	environment e = environment(n,m,chance,(float) t);
-	return(e);
-}
-
-int main(){
-	int temp = 0;
-	vector<int> y;
-	environment e = create();
-	char a1,a2;
-	int x0,y0,x1,y1;
-	while(temp < e.time_left){
-		
+	environment e = environment(n,m,chance);
+	/*for(int h = 0; h < 5 ; h++){
+		render(e);
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+			y = get<1>(e.possible_moves()[0]);
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+	}*/
+	while(temp < t){
+		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
@@ -959,13 +976,12 @@ int main(){
 		else{
 			
 			time_t t0 = time(NULL);
-			y = get<1>(e.possible_moves()[0]);
-			//node r = node(e);
-			//root = &r;
-			//search(*root, 1);
-			//cout << "i am here";
-			//cout << (*root).depth;
-			//y = (*root).action;
+			//y = get<1>(e.possible_moves()[0]);
+			node r = node(e);
+			root = &r;
+			d = 3;
+			search(root);
+			y = (*root).action;
 			e.take_action(y);
 			if (y[2] == 0){
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
