@@ -3,7 +3,6 @@ will make environment of the game to see the state
 the environment will have 2d vector
 will store the vector of soldiers and cannon
 and cannon of players
-
 the current player:
 					1 - we are
 					-1 - the other
@@ -14,7 +13,6 @@ the 2d vector of board:
 						our soldier will have 2
 						their townhall will have -1
 						their soldier will have -2
-
 the vector of our soldier:
 							the pair of int	vector
 							v[i] = v[2,3] ; the ith soldier has (2,3)
@@ -535,6 +533,7 @@ void search(node* f){
 			}
 			else if (f->visited == 0){
 				vector<tuple<float , vector<int> > >temp = f->element.possible_moves();
+				if (temp.size()>0){
 				for(int i = 0; i < temp.size(); i++){
 					
 					environment *temp2 = new environment();
@@ -545,10 +544,12 @@ void search(node* f){
 				}
 				f->element.board.clear();
 				f->visited = 1;
-				search(f->children[0]);
+				search(f->children[0]);}
+				f->visited = 1;
+				
 			}
 		
-			else if (f->visited == f->children.size()){
+			else if (f->visited >= f->children.size()){
 				//change in parent
 				if (f != root){
 					if (f->parent->element.current_player == 1){
