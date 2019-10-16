@@ -525,8 +525,6 @@ void spa(environment e){
 }
 int d;
 void search(node* f){
-	
-
 	if(f->beta > f->alpha){
 		if (f->depth < d){
 			if (f->visited < f->children.size() && f->visited != 0){
@@ -570,9 +568,11 @@ void search(node* f){
 			}
 		}
 		else if (f->depth == d){
-	
+				vector<tuple<float , vector<int> > >pa = f->element.possible_moves();
+			if(pa.size()>0){
+			
 			if (f->parent->element.current_player == 1){
-				f->beta = get<0>((f->element.possible_moves())[0]);
+				f->beta = get<0>(pa[0]);
 				if (f->beta >= f->parent->alpha){
 					f->parent->alpha = f->beta;
 					f->parent->action = f->pa;
@@ -580,17 +580,15 @@ void search(node* f){
 				}
 			}
 			else{
-				f->alpha = get<0>((f->element.possible_moves())[0]);
+				f->alpha = get<0>(pa[0]);
 				if (f->alpha <= f->parent->beta){
 					f->parent->beta = f->alpha;
-					f->parent->action = f->pa;
-				
+					f->parent->action = f->pa;	
 				}
 			}
-		
 			f->element.board.clear();
-			search(f->parent);
 		}
+		search(f->parent);}
 	}
 	else{
 		if (f != root){
