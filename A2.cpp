@@ -60,6 +60,7 @@ float eval_state(vector<vector<int> > board, int y){
 					dt = dt + board[i][j]*(7 - j);
 				}
 				else{
+					
 					dt = dt + board[i][j]*j;
 				}
 				if(board[i][j] > 0){
@@ -411,7 +412,7 @@ float eval_state(vector<vector<int> > board, int y){
 			}
 		}
 	}
-	return(10*so+100*to+ct+ 0.001*dt);
+	return(10*so+100*to+ct - 0.01*dt);
 }
 class environment{
 	
@@ -845,8 +846,8 @@ class node{
 			children = vector<node*>();
 			element = env;
 			visited = 0;
-			alpha = -10000;
-			beta = 10000;
+			alpha = -100000;
+			beta = 100000;
 			depth = 0;
 		}
 		node(){
@@ -915,7 +916,9 @@ void search(node* f){
 			}
 			else if (f->visited == 0){
 				vector<tuple<float , vector<int> > >temp = f->element.possible_moves();
+				
 					if (temp.size() > 0){
+						f->action = get<1>(temp[0]);
 					for(int i = 0; i < temp.size(); i++){
 						
 						environment *temp2 = new environment();
@@ -987,11 +990,29 @@ void search(node* f){
 	
 	}
 }
-
-
-
-
 int main(){
+	environment e1 = environment(8,8,1);
+	for(int i = 0 ;i < 8 ; i++){
+		for(int j = 0 ; j < 8 ; j++){
+			if (e1.board[i][j] < 2 && e1.board[i][j] > -2){
+				e1.board[i][j] = 0;
+			}
+		}
+	}
+	e1.board[0][1] = -1;
+	e1.board[4][0] = 0;
+	e1.board[2][2] = -1;
+	e1.board[7][1] = 1;
+	e1.board[6][6] = -1;
+	render(e1);
+	node r1 = node(e1);
+	root = &r1;
+	qo = 1;
+	d = 4;
+	search(root);
+	vector<int> y2 = (*root).action;
+	cout << y2.size()<<endl;
+	cout << e1.color<< " "<<e1.possible_moves().size()<<endl;
 	char a1,a2;
 	int x0,y0,x1,y1;
 	int chance, n,m;
