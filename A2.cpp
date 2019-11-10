@@ -56,6 +56,12 @@ float eval_state(vector<vector<int> > board, int y){
 		for(int j = 0; j < n; j++){
 			if(board[i][j] < 2 && board[i][j] > -2){
 				so = so + board[i][j];
+				if(y == 1){
+					dt = dt + borad[i][j]*(7 - j);
+				}
+				else{
+					dt = dt + borad[i][j]*j;
+				}
 				if(board[i][j] > 0){
 					int c = y;
 					bool c1 = false;
@@ -405,7 +411,7 @@ float eval_state(vector<vector<int> > board, int y){
 			}
 		}
 	}
-	return(10*so+100*to+ct);
+	return(10*so+100*to+ct+ 0.001*dt);
 }
 class environment{
 	
@@ -994,7 +1000,7 @@ int main(){
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
 	environment e = environment(n,m,chance);
-	/*for(int h = 0; h < 5 ; h++){
+	for(int h = 0; h < 4 ; h++){
 		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
@@ -1006,7 +1012,13 @@ int main(){
 			}
 		}
 		else{
-			vector<int> y = get<1>(e.possible_moves()[0]);
+			time_t t0 = time(NULL);
+			node r = node(e);
+			root = &r;
+			qo = 1;
+			d = 3;
+			search(root);
+			vector<int> y = (*root).action;
 			e.take_action(y);
 			if (y[2] == 0){
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
@@ -1015,7 +1027,7 @@ int main(){
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
 			}
 		}
-	}*/
+	}
 	while(true){
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
@@ -1032,7 +1044,7 @@ int main(){
 			node r = node(e);
 			root = &r;
 			qo = 1;
-			d = 3;
+			d = 4;
 			search(root);
 			vector<int> y = (*root).action;
 			e.take_action(y);
