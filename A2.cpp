@@ -57,10 +57,10 @@ float eval_state(vector<vector<int> > board, int y){
 			if(board[i][j] < 2 && board[i][j] > -2){
 				so = so + board[i][j];
 				if(y == 1){
-					dt = dt + borad[i][j]*(7 - j);
+					dt = dt + board[i][j]*(7 - j);
 				}
 				else{
-					dt = dt + borad[i][j]*j;
+					dt = dt + board[i][j]*j;
 				}
 				if(board[i][j] > 0){
 					int c = y;
@@ -1001,7 +1001,6 @@ int main(){
 	chance = (int) p;
 	environment e = environment(n,m,chance);
 	for(int h = 0; h < 4 ; h++){
-		render(e);
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
