@@ -78,11 +78,11 @@ float eval_state(vector<vector<int> > board, int y){
 			if(board[i][j] < 2 && board[i][j] > -2){
 				so = so + board[i][j];
 				if(y == 1){
-					dt = dt + board[i][j]*(n -1- j);
+					dt = dt + board[i][j]*pow((float)(n -1- j), 5.0);
 				}
 				else{
 					
-					dt = dt + board[i][j]*j;
+					dt = dt + board[i][j]*pow((float)j, 5.0);
 				}
 				if(board[i][j] > 0){
 					int c = y;
@@ -458,7 +458,7 @@ float eval_state(vector<vector<int> > board, int y){
 			}
 		}
 	}
-	return(10*so+100*to+ct - 0.01*dt);
+	return(10*so+100*to+ ct - 0.0000001*dt);
 }
 class environment{
 	
