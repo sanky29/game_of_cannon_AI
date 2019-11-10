@@ -458,7 +458,7 @@ float eval_state(vector<vector<int> > board, int y){
 			}
 		}
 	}
-	return(10*so+100*to+ ct - 0.0000001*dt);
+	return(100*so+1000*to+ 10*ct - 0.000001*dt);
 }
 class environment{
 	
@@ -894,8 +894,8 @@ class node{
 			children = vector<node*>();
 			element = env;
 			visited = 0;
-			alpha = -100000;
-			beta = 100000;
+			alpha = -1000000;
+			beta = 1000000;
 			depth = 0;
 		}
 		node(){
@@ -1035,8 +1035,18 @@ void search(node* f){
 		if (f != root){
 			search(f->parent);
 		}
-	
 	}
+}
+int cal_sol(environment e){
+	int ans = 0;
+	for(int i = 0 ; i < 10 ; i++){
+		for(int j = 0 ; j < 10 ; j++){
+			if (e.board[i][j] == -1 || e.board[i][j] == 1){
+				ans = ans + 1;
+			}
+		}
+	}
+	return(ans);
 }
 int main(){
 	char a1,a2;
@@ -1047,7 +1057,65 @@ int main(){
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
 	environment e = environment(n,m,chance);
+	if (m == 8 && n == 8){
 	for(int h = 0; h < 4 ; h++){
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+			time_t t0 = time(NULL);
+			node r = node(e);
+			root = &r;
+			qo = 1;
+			d = 4;
+			search(root);
+			vector<int> y = (*root).action;
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+	}
+	while(true){
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+				
+			time_t t0 = time(NULL);
+			node r = node(e);
+			root = &r;
+			qo = 1;
+			d = 4;
+			search(root);
+			vector<int> y = (*root).action;
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+	}
+	}
+	else if (m == 10 && n == 8){
+		for(int h = 0; h < 8 ; h++){
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
@@ -1102,6 +1170,67 @@ int main(){
 			}
 		}
 	}
+}
+else{
+	
+	int sol = 30;
+	while(sol > 20){
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+			time_t t0 = time(NULL);
+			node r = node(e);
+			root = &r;
+			qo = 1;
+			d = 3;
+			search(root);
+			vector<int> y = (*root).action;
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+		sol = cal_sol(e);
+	}
+	while(true){
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+				
+			time_t t0 = time(NULL);
+			node r = node(e);
+			root = &r;
+			qo = 1;
+			d = 4;
+			search(root);
+			vector<int> y = (*root).action;
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+	}
+}
 
 	/*vector< tuple<float, vector<int> > > demo;
 	demo.push_back(make_tuple(0.8, vector<int>({1,2,3})));
