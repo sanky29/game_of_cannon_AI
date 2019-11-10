@@ -3,6 +3,7 @@ will make environment of the game to see the state
 the environment will have 2d vector
 will store the vector of soldiers and cannon
 and cannon of players
+
 the current player:
 					1 - we are
 					-1 - the other
@@ -13,6 +14,7 @@ the 2d vector of board:
 						our soldier will have 2
 						their townhall will have -1
 						their soldier will have -2
+
 the vector of our soldier:
 							the pair of int	vector
 							v[i] = v[2,3] ; the ith soldier has (2,3)
@@ -35,6 +37,375 @@ using namespace std;
 bool sortdesc(tuple<float, vector<int> > a, tuple<float,  vector<int> > b) { 
     		
 	return (get<0>(a) > get<0>(b)); 
+}
+float eval_state(vector<vector<int> > board, int y){
+	//there will be four componenets as
+	// the oppo soldiers vs our soldiers
+	// the our cannon and opp cannon 
+	//our town hall vs opp townhall
+	//our attacking pos ws opponent
+	int n = board[0].size();
+	int m = board.size();
+	float ca = 0.0;
+	float so = 0.0;
+	float to = 0.0;
+	float at = 0.0;
+	float ct = 0.0;
+	float dt = 0.0;
+	for(int i = 0 ; i < m; i++){
+		for(int j = 0; j < n; j++){
+			if(board[i][j] < 2 && board[i][j] > -2){
+				so = so + board[i][j];
+				if(board[i][j] > 0){
+					int c = y;
+					bool c1 = false;
+					bool c2 = false;
+					bool c3 = false;
+					bool c4 = false;
+					if((c < 0 && (j+c)>=0) || (c > 0 && (n-1-j-c)>=0)){
+						if(board[i][j+c] == -1){
+							at = at + 1;
+						}
+						else if(board[i][j+c] == -2){
+							ct = ct + 25;
+						}
+						else if(board[i][j+c] == 1){
+							c2 = true;
+						}
+						if((m - 1-i - 1) >= 0){
+							if(board[i+1][j+c] == -1){
+								at = at + 1;
+							}
+							else if(board[i+1][j+c] == -2){
+								ct = ct + 25;
+							}
+							else if(board[i+1][j+c] == 1){
+								c3 = true;
+							}
+						}
+						
+						if((i - 1) >= 0){
+							if(board[i-1][j+c] == -1){
+								at = at + 1;
+							}
+							else if(board[i-1][j+c] == -2){
+								ct = ct + 25;
+							}
+							else if(board[i-1][j+c] == 1){
+								c1 = true;
+							}
+						}
+					}
+					if(i-1 >= 0){
+						if(board[i-1][j] == 1){
+							c4 = true;
+						}
+					}
+					if(m-1-i-1 >= 0){
+						if(board[i+1][j] == 1 && c4){
+							c4 = true;
+						}
+						else{
+							c4 = false;
+						}
+					}
+					if((c < 0 && (j-c)>=0) || (c > 0 && (n-1-j+c)>=0)){
+						if(board[i][j-c] == 1 && c2){
+							c2 = true;
+						}
+						else if(board[i][j-c] <= 0){
+							c2 = false;
+						}
+						if((m - 1-i - 1) >= 0){
+							if(board[i+1][j+c] == 1 && c3){
+								c3 = true;
+							}
+							else if(board[i+1][j+c] <= 0){
+								c3 = false;
+							}
+						}
+						
+						if((i - 1) >= 0){
+							if(board[i-1][j+c] <= 0){
+								c1 = false;
+							}
+							else if(board[i-1][j+c] == 1 && c1){
+								c1 = true;
+							}
+						}
+					}
+					ca =  ca + c1 + c2 + c3 + c4;
+					if(c1){
+						if((j+c)*(m -1-j-c) >= 0 && (i-c)*(n -1-i+c) >= 0){
+							if(board[i-c][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0 && (i-2*c)*(n -1-i+2*c) >= 0){
+									if(board[i-2*c][j+2*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i-2*c][j+2*c] == -2){
+										ct = ct + 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0 && (i-3*c)*(n -1-i+3*c) >= 0){
+									if(board[i-3*c][j+3*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i-3*c][j+3*c] == -2){
+										ct = ct + 22;
+									}
+								}
+							}
+						}
+					}
+					if(c3){
+						if((j+c)*(m -1-j-c) >= 0 && (i+c)*(n -1-i-c) >= 0){
+							if(board[i+c][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0 && (i+2*c)*(n -1-i-2*c) >= 0){
+									if(board[i+2*c][j+2*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i+2*c][j+2*c] == -2){
+										ct = ct + 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0 && (i+3*c)*(n -1-i-3*c) >= 0){
+									if(board[i+3*c][j+3*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i+3*c][j+3*c] == -2){
+										ct = ct + 22;
+									}
+								}
+							}
+						}
+					}
+					if(c2){
+						if((j+c)*(m -1-j-c) >= 0){
+							if(board[i][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0){
+									if(board[i][j+2*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i][j+2*c] == -2){
+										ct = ct + 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0){
+									if(board[i][j+3*c] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i][j+3*c] == -2){
+										ct = ct + 22;
+									}
+								}
+							}
+						}
+					}
+					if(c4){
+						if((i-c)*(n -1-i+c) >= 0){
+							if(board[i-c][j] == 0){
+								if((i-2*c)*(n -1-i+2*c) >= 0){
+									if(board[i-2*c][j] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i-2*c][j] == -2){
+										ct = ct + 22;
+									}
+								}
+								if((i-3*c)*(n -1-i+3*c) >= 0){
+									if(board[i-3*c][j] == -1){
+										ct = ct + 1;
+									}
+									else if(board[i-3*c][j] == -2){
+										ct = ct + 22;
+									}
+								}
+							}
+						}
+					}
+				}
+				else if(board[i][j] < 0){
+					int c = -1*y;
+					bool c1 = false;
+					bool c2 = false;
+					bool c3 = false;
+					bool c4 = false;
+					if((j+c)>=0 && (n-1-j-c)>=0){
+						if(board[i][j+c] == 1){
+						
+							at = at - 1;
+						}
+						else if(board[i][j+c] == 2){
+							ct = ct - 25;
+						}
+						else if(board[i][j+c] == -1){
+							c2 = true;
+						}
+						if((m -1- i - 1) >= 0){
+							if(board[i+1][j+c] == 1){
+								at = at - 1;
+							}
+							else if(board[i+1][j+c] == 2){
+								ct = ct - 25;
+							}
+							else if(board[i+1][j+c] == -1){
+								c3 = true;
+							}
+						}
+						
+						if((i - 1) >= 0){
+							
+							if(board[i-1][j+c] == 1){
+								at = at - 1;
+							}
+							else if(board[i-1][j+c] == 2){
+								ct = ct - 25;
+							}
+							else if(board[i-1][j+c] == -1){
+								c1 = true;
+							}
+						}
+					}
+					
+					if(i-1 >= 0){
+						
+						if(board[i-1][j] == -1){
+							c4 = true;
+						}
+					}
+					if(m-1-i-1 >= 0){
+						
+						if(board[i+1][j] == -1 && c4){
+							c4 = true;
+						}
+						else{
+							c4 = false;
+						}
+					}
+					if((j-c)>=0 &&  (n-1-j+c)>=0){
+						
+						if(board[i][j-c] == -1 && c2){
+							c2 = true;
+						}
+						else if(board[i][j-c] >= 0){
+							c2 = false;
+						}
+						if((m -1-i - 1) >= 0){
+							if(board[i+1][j+c] == -1 && c3){
+								c3 = true;
+							}
+							else if(board[i+1][j+c] >= 0){
+								c3 = false;
+							}
+						}
+						
+						if((i - 1) >= 0){
+							
+							if(board[i-1][j+c] >= 0){
+								c1 = false;
+							}
+							else if(board[i-1][j+c] == -1 && c1){
+								c1 = true;
+							}
+						}
+					}
+					ca = ca -1*(c1+c2+c3+c4);
+					if(c1){
+						if((j+c)*(m -1-j-c) >= 0 && (i-c)*(n -1-i+c) >= 0){
+							if(board[i-c][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0 && (i-2*c)*(n -1-i+2*c) >= 0){
+									if(board[i-2*c][j+2*c] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i-2*c][j+2*c] == 2){
+										ct = ct - 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0 && (i-3*c)*(n -1-i+3*c) >= 0){
+									if(board[i-3*c][j+3*c] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i-3*c][j+3*c] == 2){
+										ct = ct - 22;
+									}
+								}
+							}
+						}
+					}
+					if(c3){
+						if((j+c)*(m -1-j-c) >= 0 && (i+c)*(n -1-i-c) >= 0){
+							if(board[i+c][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0 && (i+2*c)*(n -1-i-2*c) >= 0){
+									if(board[i+2*c][j+2*c] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i+2*c][j+2*c] == 2){
+										ct = ct - 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0 && (i+3*c)*(n -1-i-3*c) >= 0){
+									if(board[i+3*c][j+3*c] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i+3*c][j+3*c] == 2){
+										ct = ct - 22;
+									}
+								}
+							}
+						}
+					}
+					if(c2){
+						if((j+c)*(m -1-j-c) >= 0){
+							if(board[i][j+c] == 0){
+								if((j+2*c)*(m -1-j-2*c) >= 0){
+									if(board[i][j+2*c] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i][j+2*c] == 2){
+										ct = ct - 22;
+									}
+								}
+								if((j+3*c)*(m -1-j-3*c) >= 0){
+									if(board[i][j+3*c] == 1){
+										ct = ct - 1;
+									}
+									if(board[i][j+3*c] == 2){
+										ct = ct - 22;
+									}
+								}
+							}
+						}
+					}
+					if(c4){
+						if((i-c)*(n -1-i+c) >= 0){
+							if(board[i-c][j] == 0){
+								if((i-2*c)*(n -1-i+2*c) >= 0){
+									if(board[i-2*c][j] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i-2*c][j] == 2){
+										ct = ct - 22;
+									}
+								}
+								if((i-3*c)*(n -1-i+3*c) >= 0){
+									if(board[i-3*c][j] == 1){
+										ct = ct - 1;
+									}
+									else if(board[i-3*c][j] == 2){
+										ct = ct - 22;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else{
+				to = to + board[i][j];
+			}
+		}
+	}
+	return(10*so+100*to+ct);
 }
 class environment{
 	
@@ -359,21 +730,22 @@ class environment{
 			score = vector< vector<float> >(8 , vector<float>(8, 1));
 			//just do the dot product
 			for (int i = 0; i < ans.size(); i++){
-				vector< vector<int> > temp2 = board;
+				vector< vector<int> > t2 = board;
 				if(ans[i][2] == 0){
-					temp2[ans[i][0]][ans[i][1]] = 0;
-					temp2[ans[i][3]][ans[i][4]] = current_player;
+					t2[ans[i][0]][ans[i][1]] = 0;
+					t2[ans[i][3]][ans[i][4]] = current_player;
 				}
 				else{
-					temp2[ans[i][3]][ans[i][4]] = 0;
+					t2[ans[i][3]][ans[i][4]] = 0;
 				}
-				int temp = 0;
-				for (int j = 0 ; j < 8 ; j++){
-					for(int k = 0; k < 8 ; k++){
-						temp = temp + temp2[j][k]*score[j][k];
-					}
-				}
-				ansf.push_back(make_tuple(temp, ans[i]));
+				//float t3 = 0;
+				float t3 = eval_state(t2,color);
+				//for (int j = 0 ; j < 8 ; j++){
+				//	for(int k = 0; k < 8 ; k++){
+				//		t3 = t3 + t2[j][k]*score[j][k];
+				//	}
+				//}
+				ansf.push_back(make_tuple(t3, ans[i]));
 			}
 			if (current_player == 1){
 			sort(ansf.begin(), ansf.end(), sortdesc);}
@@ -467,8 +839,8 @@ class node{
 			children = vector<node*>();
 			element = env;
 			visited = 0;
-			alpha = -100;
-			beta = 100;
+			alpha = -10000;
+			beta = 10000;
 			depth = 0;
 		}
 		node(){
@@ -522,7 +894,11 @@ void spa(environment e){
 	
 }
 int d;
+int qo = 1;
+vector<vector<vector<int>>> data;
+
 void search(node* f){
+	qo = qo + 1;
 	if(f->beta > f->alpha){
 		if (f->depth < d){
 			if (f->visited < f->children.size() && f->visited != 0){
@@ -533,22 +909,24 @@ void search(node* f){
 			}
 			else if (f->visited == 0){
 				vector<tuple<float , vector<int> > >temp = f->element.possible_moves();
-				if (temp.size()>0){
-				for(int i = 0; i < temp.size(); i++){
-					
-					environment *temp2 = new environment();
-					*temp2 = (f->element);
-					(*temp2).take_action(get<1>(temp[i]));
-					node *temp3 =new node(*temp2, f, get<1>(temp[i]));
-					f->children.push_back(temp3);
+					if (temp.size() > 0){
+					for(int i = 0; i < temp.size(); i++){
+						
+						environment *temp2 = new environment();
+						*temp2 = (f->element);
+						(*temp2).take_action(get<1>(temp[i]));
+						node *temp3 =new node(*temp2, f, get<1>(temp[i]));
+						f->children.push_back(temp3);
+					}
+					f->element.board.clear();
+					f->visited = 1;
+					search(f->children[0]);
 				}
-				f->element.board.clear();
+			else{
 				f->visited = 1;
-				search(f->children[0]);}
-				f->visited = 1;
-				
+				search(f);
 			}
-		
+		}
 			else if (f->visited >= f->children.size()){
 				//change in parent
 				if (f != root){
@@ -564,32 +942,37 @@ void search(node* f){
 							f->parent->action = f->pa;
 						}
 					}
+					f->element.board.clear();
+					f->children.clear();
 					search(f->parent);
 				}
 			}
 		}
 		else if (f->depth == d){
-				vector<tuple<float , vector<int> > >pa = f->element.possible_moves();
-			if(pa.size()>0){
-			
-			if (f->parent->element.current_player == 1){
-				f->beta = get<0>(pa[0]);
-				if (f->beta >= f->parent->alpha){
-					f->parent->alpha = f->beta;
-					f->parent->action = f->pa;
-			
+			vector<tuple<float , vector<int> > >temp = f->element.possible_moves();
+			environment t = f->element;
+			if(temp.size() > 0){
+				//t.take_action(get<1>(temp[0]));
+				if (f->parent->element.current_player == 1){
+					f->beta = eval_state(t.board, t.color);
+					//f->beta = get<0>(temp[0]);
+					if (f->beta >= f->parent->alpha){
+						f->parent->alpha = f->beta;
+						f->parent->action = f->pa;
+					}
 				}
-			}
-			else{
-				f->alpha = get<0>(pa[0]);
-				if (f->alpha <= f->parent->beta){
-					f->parent->beta = f->alpha;
-					f->parent->action = f->pa;	
+				else{
+					f->alpha = eval_state(t.board, t.color);
+					//f->alpha = get<0>(temp[0]);
+					if (f->alpha <= f->parent->beta){
+						f->parent->beta = f->alpha;
+						f->parent->action = f->pa;
+					}
 				}
 			}
 			f->element.board.clear();
+			search(f->parent);
 		}
-		search(f->parent);}
 	}
 	else{
 		if (f != root){
@@ -603,7 +986,6 @@ void search(node* f){
 
 
 int main(){
-	int temp = 0;
 	char a1,a2;
 	int x0,y0,x1,y1;
 	int chance, n,m;
@@ -612,28 +994,29 @@ int main(){
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
 	environment e = environment(n,m,chance);
-//	for(int h = 0; h < 5 ; h++){
-//		if(e.current_player == -1){
-//		cin>>a1>>x0>>y0>>a2>>x1>>y1;
-//			if (a2 == 'M'){
-//				e.take_action(vector<int>({x0,y0,0,x1,y1}));
-//			}
-//			else{
-//				e.take_action(vector<int>({x0,y0,1,x1,y1}));
-//			}
-//		}
-//		else{
-//			vector<int> y = get<1>(e.possible_moves()[0]);
-//			e.take_action(y);
-//			if (y[2] == 0){
-//				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
-//			}	
-//			else{
-//				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
-//			}
-//		}
-//	}
-	while(temp < t){
+	/*for(int h = 0; h < 5 ; h++){
+		render(e);
+		if(e.current_player == -1){
+		cin>>a1>>x0>>y0>>a2>>x1>>y1;
+			if (a2 == 'M'){
+				e.take_action(vector<int>({x0,y0,0,x1,y1}));
+			}
+			else{
+				e.take_action(vector<int>({x0,y0,1,x1,y1}));
+			}
+		}
+		else{
+			vector<int> y = get<1>(e.possible_moves()[0]);
+			e.take_action(y);
+			if (y[2] == 0){
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"M "<<y[3]<<" "<<y[4]<<endl;
+			}	
+			else{
+				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
+			}
+		}
+	}*/
+	while(true){
 		if(e.current_player == -1){
 		cin>>a1>>x0>>y0>>a2>>x1>>y1;
 			if (a2 == 'M'){
@@ -646,9 +1029,9 @@ int main(){
 		else{
 				
 			time_t t0 = time(NULL);
-			
 			node r = node(e);
 			root = &r;
+			qo = 1;
 			d = 3;
 			search(root);
 			vector<int> y = (*root).action;
@@ -659,8 +1042,6 @@ int main(){
 			else{
 				cout << "S "<<y[0]<<" "<<y[1]<<" "<<"B "<<y[3]<<" "<<y[4]<<endl;
 			}
-			time_t t1 = time(NULL);
-			temp = temp + t1 - t0; 
 		}
 	}
 
