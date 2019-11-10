@@ -38,6 +38,27 @@ bool sortdesc(tuple<float, vector<int> > a, tuple<float,  vector<int> > b) {
     		
 	return (get<0>(a) > get<0>(b)); 
 }
+//define function to see the state 
+void renders(vector<vector<int> > board){
+	//just run for loop
+	cout << "--------------------------"<<endl;
+	for(int i = 0; i < board[0].size() ; i++){
+		for(int j = 0; j < board.size(); j++){
+			if(board[j][i] == 1){
+			cout <<"|"<<"AS";}
+			else if(board[j][i] == -1){
+			cout <<"|"<<"OS";}
+			else if(board[j][i] == 2){
+			cout <<"|"<<"AT";}
+			else if(board[j][i] == -2){
+			cout <<"|"<<"OT";}
+			else{
+				cout <<"|  "; 
+			}
+		}
+		cout <<"|"<<endl<< "--------------------------"<<endl;
+	}
+}
 float eval_state(vector<vector<int> > board, int y){
 	//there will be four componenets as
 	// the oppo soldiers vs our soldiers
@@ -57,7 +78,7 @@ float eval_state(vector<vector<int> > board, int y){
 			if(board[i][j] < 2 && board[i][j] > -2){
 				so = so + board[i][j];
 				if(y == 1){
-					dt = dt + board[i][j]*(7 - j);
+					dt = dt + board[i][j]*(n -1- j);
 				}
 				else{
 					
@@ -80,6 +101,7 @@ float eval_state(vector<vector<int> > board, int y){
 							c2 = true;
 						}
 						if((m - 1-i - 1) >= 0){
+							
 							if(board[i+1][j+c] == -1){
 								at = at + 1;
 							}
@@ -116,7 +138,12 @@ float eval_state(vector<vector<int> > board, int y){
 							c4 = false;
 						}
 					}
-					if((c < 0 && (j-c)>=0) || (c > 0 && (n-1-j+c)>=0)){
+					if((c > 0 && (j-c)<0) || (c < 0 && (n-1-j+c)<0)){
+						c2 = false;
+						c3 = false;
+						c1 = false;
+					}
+					if((c > 0 && (j-c)>=0) || (c < 0 && (n-1-j+c)>=0)){
 						if(board[i][j-c] == 1 && c2){
 							c2 = true;
 						}
@@ -124,28 +151,35 @@ float eval_state(vector<vector<int> > board, int y){
 							c2 = false;
 						}
 						if((m - 1-i - 1) >= 0){
-							if(board[i+1][j+c] == 1 && c3){
+							if(board[i+1][j-c] == 1 && c3){
 								c3 = true;
 							}
-							else if(board[i+1][j+c] <= 0){
+							else if(board[i+1][j-c] <= 0){
 								c3 = false;
 							}
 						}
 						
 						if((i - 1) >= 0){
-							if(board[i-1][j+c] <= 0){
+							if(board[i-1][j-c] <= 0){
 								c1 = false;
 							}
-							else if(board[i-1][j+c] == 1 && c1){
+							else if(board[i-1][j-c] == 1 && c1){
 								c1 = true;
 							}
+						}
+						if(i-1 <0){
+							c1 = false;
+						}
+						if((m - 1-i - 1) < 0){
+							c3 = false;
 						}
 					}
 					ca =  ca + c1 + c2 + c3 + c4;
 					if(c1){
-						if((j+c)*(m -1-j-c) >= 0 && (i-c)*(n -1-i+c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0 && (i-c)*(m -1-i+c) >= 0){
+						
 							if(board[i-c][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0 && (i-2*c)*(n -1-i+2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0 && (i-2*c)*(m -1-i+2*c) >= 0){
 									if(board[i-2*c][j+2*c] == -1){
 										ct = ct + 1;
 									}
@@ -153,7 +187,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct + 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0 && (i-3*c)*(n -1-i+3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0 && (i-3*c)*(m -1-i+3*c) >= 0){
 									if(board[i-3*c][j+3*c] == -1){
 										ct = ct + 1;
 									}
@@ -164,10 +198,11 @@ float eval_state(vector<vector<int> > board, int y){
 							}
 						}
 					}
+					
 					if(c3){
-						if((j+c)*(m -1-j-c) >= 0 && (i+c)*(n -1-i-c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0 && (i+c)*(m -1-i-c) >= 0){
 							if(board[i+c][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0 && (i+2*c)*(n -1-i-2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0 && (i+2*c)*(m -1-i-2*c) >= 0){
 									if(board[i+2*c][j+2*c] == -1){
 										ct = ct + 1;
 									}
@@ -175,7 +210,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct + 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0 && (i+3*c)*(n -1-i-3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0 && (i+3*c)*(m -1-i-3*c) >= 0){
 									if(board[i+3*c][j+3*c] == -1){
 										ct = ct + 1;
 									}
@@ -187,9 +222,9 @@ float eval_state(vector<vector<int> > board, int y){
 						}
 					}
 					if(c2){
-						if((j+c)*(m -1-j-c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0){
 							if(board[i][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0){
 									if(board[i][j+2*c] == -1){
 										ct = ct + 1;
 									}
@@ -197,7 +232,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct + 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0){
 									if(board[i][j+3*c] == -1){
 										ct = ct + 1;
 									}
@@ -209,9 +244,9 @@ float eval_state(vector<vector<int> > board, int y){
 						}
 					}
 					if(c4){
-						if((i-c)*(n -1-i+c) >= 0){
+						if((i-c)*(m -1-i+c) >= 0){
 							if(board[i-c][j] == 0){
-								if((i-2*c)*(n -1-i+2*c) >= 0){
+								if((i-2*c)*(m -1-i+2*c) >= 0){
 									if(board[i-2*c][j] == -1){
 										ct = ct + 1;
 									}
@@ -219,7 +254,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct + 22;
 									}
 								}
-								if((i-3*c)*(n -1-i+3*c) >= 0){
+								if((i-3*c)*(m -1-i+3*c) >= 0){
 									if(board[i-3*c][j] == -1){
 										ct = ct + 1;
 									}
@@ -237,7 +272,7 @@ float eval_state(vector<vector<int> > board, int y){
 					bool c2 = false;
 					bool c3 = false;
 					bool c4 = false;
-					if((j+c)>=0 && (n-1-j-c)>=0){
+					if((c < 0 && (j+c)>=0) || (c > 0 && (n-1-j-c)>=0)){
 						if(board[i][j+c] == 1){
 						
 							at = at - 1;
@@ -289,7 +324,12 @@ float eval_state(vector<vector<int> > board, int y){
 							c4 = false;
 						}
 					}
-					if((j-c)>=0 &&  (n-1-j+c)>=0){
+					if((c > 0 && (j-c)<0) || (c < 0 && (n-1-j+c)<0)){
+						c2 = false;
+						c3 = false;
+						c1 = false;
+					}
+					if( (c >0 && (j-c)>=0) || (c<0 && (n-1-j+c)>=0)){
 						
 						if(board[i][j-c] == -1 && c2){
 							c2 = true;
@@ -298,29 +338,35 @@ float eval_state(vector<vector<int> > board, int y){
 							c2 = false;
 						}
 						if((m -1-i - 1) >= 0){
-							if(board[i+1][j+c] == -1 && c3){
+							if(board[i+1][j-c] == -1 && c3){
 								c3 = true;
 							}
-							else if(board[i+1][j+c] >= 0){
+							else if(board[i+1][j-c] >= 0){
 								c3 = false;
 							}
 						}
 						
 						if((i - 1) >= 0){
 							
-							if(board[i-1][j+c] >= 0){
+							if(board[i-1][j-c] >= 0){
 								c1 = false;
 							}
-							else if(board[i-1][j+c] == -1 && c1){
+							else if(board[i-1][j-c] == -1 && c1){
 								c1 = true;
 							}
+						}
+						if(i-1 <0){
+							c1 = false;
+						}
+						if((m - 1-i - 1) < 0){
+							c3 = false;
 						}
 					}
 					ca = ca -1*(c1+c2+c3+c4);
 					if(c1){
-						if((j+c)*(m -1-j-c) >= 0 && (i-c)*(n -1-i+c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0 && (i-c)*(m -1-i+c) >= 0){
 							if(board[i-c][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0 && (i-2*c)*(n -1-i+2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0 && (i-2*c)*(m -1-i+2*c) >= 0){
 									if(board[i-2*c][j+2*c] == 1){
 										ct = ct - 1;
 									}
@@ -328,7 +374,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct - 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0 && (i-3*c)*(n -1-i+3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0 && (i-3*c)*(m -1-i+3*c) >= 0){
 									if(board[i-3*c][j+3*c] == 1){
 										ct = ct - 1;
 									}
@@ -340,9 +386,9 @@ float eval_state(vector<vector<int> > board, int y){
 						}
 					}
 					if(c3){
-						if((j+c)*(m -1-j-c) >= 0 && (i+c)*(n -1-i-c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0 && (i+c)*(m -1-i-c) >= 0){
 							if(board[i+c][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0 && (i+2*c)*(n -1-i-2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0 && (i+2*c)*(m -1-i-2*c) >= 0){
 									if(board[i+2*c][j+2*c] == 1){
 										ct = ct - 1;
 									}
@@ -350,7 +396,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct - 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0 && (i+3*c)*(n -1-i-3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0 && (i+3*c)*(m -1-i-3*c) >= 0){
 									if(board[i+3*c][j+3*c] == 1){
 										ct = ct - 1;
 									}
@@ -362,9 +408,9 @@ float eval_state(vector<vector<int> > board, int y){
 						}
 					}
 					if(c2){
-						if((j+c)*(m -1-j-c) >= 0){
+						if((j+c)*(n -1-j-c) >= 0){
 							if(board[i][j+c] == 0){
-								if((j+2*c)*(m -1-j-2*c) >= 0){
+								if((j+2*c)*(n -1-j-2*c) >= 0){
 									if(board[i][j+2*c] == 1){
 										ct = ct - 1;
 									}
@@ -372,7 +418,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct - 22;
 									}
 								}
-								if((j+3*c)*(m -1-j-3*c) >= 0){
+								if((j+3*c)*(n -1-j-3*c) >= 0){
 									if(board[i][j+3*c] == 1){
 										ct = ct - 1;
 									}
@@ -384,9 +430,9 @@ float eval_state(vector<vector<int> > board, int y){
 						}
 					}
 					if(c4){
-						if((i-c)*(n -1-i+c) >= 0){
+						if((i-c)*(m -1-i+c) >= 0){
 							if(board[i-c][j] == 0){
-								if((i-2*c)*(n -1-i+2*c) >= 0){
+								if((i-2*c)*(m -1-i+2*c) >= 0){
 									if(board[i-2*c][j] == 1){
 										ct = ct - 1;
 									}
@@ -394,7 +440,7 @@ float eval_state(vector<vector<int> > board, int y){
 										ct = ct - 22;
 									}
 								}
-								if((i-3*c)*(n -1-i+3*c) >= 0){
+								if((i-3*c)*(m -1-i+3*c) >= 0){
 									if(board[i-3*c][j] == 1){
 										ct = ct - 1;
 									}
@@ -456,21 +502,22 @@ class environment{
 		                                 
 		//define function to give vector of possible movements
 		vector<tuple<float, vector<int> > > possible_moves(){
-		
 			//the temporary varaibles
 			vector<vector <int> >so;
 			vector<vector <int> >ca;
 			//the ans vector
 			vector< vector<int> > ans;
+			int m = board.size();
+			int n = board[0].size();
 			if(current_player == 1){
-				for(int i = 0; i < 8 ; i++){
-					for(int j = 0 ; j < 8 ; j++){
+				for(int i = 0; i < m ; i++){
+					for(int j = 0 ; j < n ; j++){
 						if (board[i][j] == 1){
 							so.push_back(vector<int>({i,j}));
-							if((i+1)*(i-6)<= 0 && (i-1)*(i-8)<= 0 && board[i+1][j] == 1 && board[i-1][j] == 1){
+							if((i+1)*(i+2-m)<= 0 && (i-1)*(i-m)<= 0 && board[i+1][j] == 1 && board[i-1][j] == 1){
 								ca.push_back(vector<int>({i,j,0}));
 							}
-							if((i+1)*(i-6)<= 0 && (i-1)*(i-8)<= 0 && (j+1)*(j-6)<= 0 && (j-1)*(j-8)<= 0 ){
+							if((i+1)*(i+2-m)<= 0 && (i-1)*(i-m)<= 0 && (j+1)*(j-n+2)<= 0 && (j-1)*(j-n)<= 0 ){
 								if (board[i+1][j+1] == 1 && board[i-1][j-1] == 1){
 									ca.push_back(vector<int>({i,j,1}));
 								}
@@ -478,7 +525,7 @@ class environment{
 									ca.push_back(vector<int>({i,j,-1}));
 								}
 							}
-							if((j+1)*(j-6)<= 0 && (j-1)*(j-8)<= 0 && board[i][j+1] == 1 && board[i][j-1] == 1){
+							if((j+1)*(j-n+2)<= 0 && (j-1)*(j-n)<= 0 && board[i][j+1] == 1 && board[i][j-1] == 1){
 								ca.push_back(vector<int>({i,j,2}));
 							}
 						}
@@ -486,14 +533,14 @@ class environment{
 				}
 			} 
 			else{
-				for(int i = 0; i < 8 ; i++){
-					for(int j = 0 ; j < 8 ; j++){
+				for(int i = 0; i < m ; i++){
+					for(int j = 0 ; j < n ; j++){
 						if (board[i][j] == -1){
 							so.push_back(vector<int>({i,j}));
-							if((i+1)*(i-6)<= 0 && (i-1)*(i-8)<= 0 && board[i+1][j] == -1 && board[i-1][j] == -1){
+							if((i+1)*(i-m+2)<= 0 && (i-1)*(i-m)<= 0 && board[i+1][j] == -1 && board[i-1][j] == -1){
 								ca.push_back(vector<int>({i,j,0}));
 							}
-							if((i+1)*(i-6)<= 0 && (i-1)*(i-8)<= 0 && (j+1)*(j-6)<= 0 && (j-1)*(j-8)<= 0 ){
+							if((i+1)*(i-m+2)<= 0 && (i-1)*(i-m)<= 0 && (j+1)*(j-n+2)<= 0 && (j-1)*(j-n)<= 0 ){
 								if (board[i+1][j+1] == -1 && board[i-1][j-1] == -1){
 									ca.push_back(vector<int>({i,j,1}));
 								}
@@ -501,14 +548,13 @@ class environment{
 									ca.push_back(vector<int>({i,j,-1}));
 								}
 							}
-							if((j+1)*(j-6)<= 0 && (j-1)*(j-8)<= 0 && board[i][j+1] == -1 && board[i][j-1] == -1){
+							if((j+1)*(j-n+2)<= 0 && (j-1)*(j-n)<= 0 && board[i][j+1] == -1 && board[i][j-1] == -1){
 								ca.push_back(vector<int>({i,j,2}));
 							}
 						}
 					}
 				}
 			} 
-		
 			int p, o, c;
 			//first will work on our soldiers
 			if(current_player == 1){
@@ -530,51 +576,51 @@ class environment{
 				int y = so[i][1];
 				//checking daigonl condition
 				
-				if ((x -6)*(x + 1 )<= 0 && (y + c - 7)*(y + c ) <= 0 && board[x+1][y+c] != p){
+				if ((x -m+2)*(x + 1 )<= 0 && (y + c - n+1)*(y + c ) <= 0 && board[x+1][y+c] != p){
 					//just add the given action to ans
 					ans.push_back(vector<int>({x,y,0,x+1,y+c}));
 				}
 				
 				//checking verticle condition
-				if ((y + c - 7)*(y + c )<= 0 && board[x][y+c] != p){
+				if ((y + c - n+1)*(y + c )<= 0 && board[x][y+c] != p){
 					
 					//just add the given action to ans
 					ans.push_back(vector<int>({x,y,0,x,y+c}));
 				}
 				//checking horizontal condition right
-				if ((x -6)*(x + 1 )<= 0 && board[x+1][y] == o){
+				if ((x -m+2)*(x + 1 )<= 0 && board[x+1][y] == o){
 					
 					//just add the given action to ans
 					ans.push_back(vector<int>({x,y,0,x+1,y}));
 				}
 				//checking horizontal condition left
-				if ((x -8)*(x - 1 )<= 0 && board[x-1][y] == o){
+				if ((x -m)*(x - 1 )<= 0 && board[x-1][y] == o){
 					
 					//just add the given action to ans
 					ans.push_back(vector<int>({x,y,0,x-1,y}));
 				}
 				//checking daigonl condition negative the x decreases
-				if ((x -8)*(x - 1 )<= 0 && (y -7 + c)*(y + c )<= 0 && board[x-1][y+c] != p){
+				if ((x -m)*(x - 1 )<= 0 && (y -n+1 + c)*(y + c )<= 0 && board[x-1][y+c] != p){
 					
 					//just add the given action to ans
 					ans.push_back(vector<int>({x,y,0,x-1,y+c}));
 				}
 				//checking back track conditions
-				if (((x+1)*(x-6) <= 0 && board[x+1][y] == o) || ((x-1)*(x-8) <= 0 && board[x-1][y] == o) || ( (y+c)*(y-7+c) <= 0 && board[x][y+c] == o)
-				 || ((x -6)*(x + 1 )<= 0 && (y -7 +c)*(y + c ) <= 0 && board[x+1][y+c] == o)||((x -8)*(x - 1 )<= 0 && (y -7 +c)*(y + c )<= 0 && board[x-1][y+c] == o)){
+				if (((x+1)*(x-m+2) <= 0 && board[x+1][y] == o) || ((x-1)*(x-m) <= 0 && board[x-1][y] == o) || ( (y+c)*(y-n+1+c) <= 0 && board[x][y+c] == o)
+				 || ((x -m+2)*(x + 1 )<= 0 && (y -n+1 +c)*(y + c ) <= 0 && board[x+1][y+c] == o)||((x -m)*(x - 1 )<= 0 && (y -n+1 +c)*(y + c )<= 0 && board[x-1][y+c] == o)){
 				 	
 					//neeed to check the backward conditions
-					if((y-7 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p && board[x][y-2*c] != 2*p)){
+					if((y-n+1 - 2*c)*(y - 2*c) <= 0 && (board[x][y-2*c] != p && board[x][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x,y-2*c}));			
 					}
 					//the diagonal condition backward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-9)*(x-2) <= 0 && (board[x-2][y-2*c] != p && board[x-2][y-2*c] != 2*p)){
+					if((y-n+1 - 2*c)*(y-2*c) <= 0 && (x-m-1)*(x-2) <= 0 && (board[x-2][y-2*c] != p && board[x-2][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x-2,y-2*c}));
 					}
 					//the diagonal condition forward
-					if((y-7 - 2*c)*(y-2*c) <= 0 && (x-5)*(x+2) <= 0 && (board[x+2][y-2*c] != p && board[x+2][y-2*c] != 2*p)){
+					if((y-n+1 - 2*c)*(y-2*c) <= 0 && (x-m+3)*(x+2) <= 0 && (board[x+2][y-2*c] != p && board[x+2][y-2*c] != 2*p)){
 						//just add the given action to ans
 						ans.push_back(vector<int>({x,y,0,x+2,y-2*c}));
 					}
@@ -582,42 +628,42 @@ class environment{
 			}
 			//just need to go for cannon
 			for(int i = 0; i < ca.size(); i++){
+				
 				//the movement one first
 				int x = ca[i][0];
 				int y = ca[i][1];
 				int d = ca[i][2];
-				
 				//now check along the dierctions
 				//this is verticle
 				if(d == 2){
 					//forward move
-					if((y-5)*(y+2) <= 0 && board[x][y+2] == 0){
+					if((y-n+3)*(y+2) <= 0 && board[x][y+2] == 0){
 						//just add the element to ans
 						ans.push_back({x,y-1,0,x,y+2});
 						//add attack action
-						if((y-4)*(y+3) <= 0 && board[x][y+3] != p && board[x][y+3] != p*2){
+						if((y-n+4)*(y+3) <= 0 && board[x][y+3] != p && board[x][y+3] != p*2){
 							//just add the element to ans
 							ans.push_back({x,y+1,1,x,y+3});			
 						}
 						//add attack action
-						if((y-3)*(y+4) <= 0 && board[x][y+4] != p && board[x][y+4] != 2*p){
+						if((y-n+5)*(y+4) <= 0 && board[x][y+4] != p && board[x][y+4] != 2*p){
 							//just add the element to ans
 							ans.push_back({x,y+1,1,x,y+4});
 						}
 					}
 						//backward move
-						if((y-9)*(y-2) <= 0 && board[x][y-2] == 0){
+						if((y-n-1)*(y-2) <= 0 && board[x][y-2] == 0){
 							//just add the element to ans
 							
 								ans.push_back({x,y+1,0,x,y-2});
 							//add attack action
-							if((y-10)*(y-3) <= 0 && board[x][y-3] != p && board[x][y-3] != 2*p){
+							if((y-n-2)*(y-3) <= 0 && board[x][y-3] != p && board[x][y-3] != 2*p){
 								//just add the element to ans
 								ans.push_back({x,y-1,1,x,y-3});	
 							
 							}
 							//add attack action
-							if((y-11)*(y-4) <= 0 && board[x][y-4] != p && board[x][y-4] != 2*p){
+							if((y-n-3)*(y-4) <= 0 && board[x][y-4] != p && board[x][y-4] != 2*p){
 								//just add the element to ans
 								ans.push_back({x,y-1,1,x,y-4});
 							}
@@ -626,33 +672,35 @@ class environment{
 					//this is verticle
 				if(d == 0){
 					//forward move
-					if((x-5)*(x+2) <= 0 && board[x+2][y] == 0){
+					if((x-m+3)*(x+2) <= 0 && board[x+2][y] == 0){
+						
 						//just add the element to ans
 						ans.push_back({x-1,y,0,x+2,y});
 						
 						//add attack action
-						if((x-4)*(x+3) <= 0 && board[x+3][y] != p && board[x+3][y] != 2*p){
+						if((x-m+4)*(x+3) <= 0 && board[x+3][y] != p && board[x+3][y] != 2*p){
+							
 							//just add the element to ans
 							ans.push_back({x+1,y,1,x+3,y});
 						}
 						//add attack action
-						if((x-3)*(x+4) <= 0 && board[x+4][y] != p && board[x+4][y] != 2*p){
+						if((x-m+5)*(x+4) <= 0 && board[x+4][y] != p && board[x+4][y] != 2*p){
 							//just add the element to ans
 							ans.push_back({x+1,y,1,x+4,y});
 						}
 					}
 						//backward move
-						if((x-9)*(x-2) <= 0 && board[x-2][y] == 0){
+						if((x-m-1)*(x-2) <= 0 && board[x-2][y] == 0){
 							//just add the element to ans
 							ans.push_back({x+1,y,0,x-2,y});
 							
 							//add attack action
-							if((x-10)*(x-3) <= 0 && board[x-3][y] != p && board[x-3][y] != 2*p){
+							if((x-m-2)*(x-3) <= 0 && board[x-3][y] != p && board[x-3][y] != 2*p){
 								//just add the element to ans
 								ans.push_back({x-1,y,1,x-3,y});
 							}
 							//add attack action
-							if((x-11)*(x-4) <= 0 && board[x-4][y] != p && board[x-4][y] != 2*p){
+							if((x-m-3)*(x-4) <= 0 && board[x-4][y] != p && board[x-4][y] != 2*p){
 								//just add the element to ans
 								ans.push_back({x-1,y,1,x-4,y});
 							}
@@ -661,33 +709,33 @@ class environment{
 						//this is verticle
 				if(d == 1){
 					//forward move
-					if((x-5)*(x+2) <= 0 && (y-5)*(y+2) <= 0 && board[x+2][y+2] == 0){
+					if((x-m+3)*(x+2) <= 0 && (y-5)*(y+2) <= 0 && board[x+2][y+2] == 0){
 						//just add the element to ans
 						ans.push_back({x-1,y-1,0,x+2,y+2});
 						
 						//add attack action
-						if((x-4)*(x+3) <= 0 && (y-4)*(y+3) <= 0 && board[x+3][y+3] != p && board[x+3][y+3] != 2*p){
+						if((x-m+4)*(x+3) <= 0 && (y-4)*(y+3) <= 0 && board[x+3][y+3] != p && board[x+3][y+3] != 2*p){
 							//just add the element to ans
 							ans.push_back({x+1,y+1,1,x+3,y+3});
 						}
 						//add attack action
-						if((x-3)*(x+4) <= 0 && (y-3)*(y+4) <= 0 && board[x+4][y+4] != p && board[x+4][y+4] != 2*p){
+						if((x-m+5)*(x+4) <= 0 && (y-n +5)*(y+4) <= 0 && board[x+4][y+4] != p && board[x+4][y+4] != 2*p){
 							//just add the element to ans
 							ans.push_back({x+1,y+1,1,x+4,y+4});
 						}
 					}
 					//backward move
-					if((x-9)*(x-2) <= 0 && (y-9)*(y-2) <= 0 && board[x-2][y-2] == 0){
+					if((x-m-1)*(x-2) <= 0 && (y-n-1)*(y-2) <= 0 && board[x-2][y-2] == 0){
 						//just add the element to ans
 						ans.push_back({x+1,y+1,0,x-2,y-2});
 						
 						//add attack action
-						if((x-10)*(x-3) <= 0 && (y-10)*(y-3) <= 0 && board[x-3][y-3] != p && board[x-3][y-3] != 2*p){
+						if((x-m-2)*(x-3) <= 0 && (y-m-2)*(y-3) <= 0 && board[x-3][y-3] != p && board[x-3][y-3] != 2*p){
 							//just add the element to ans
 							ans.push_back({x-1,y-1,1,x-3,y-3});
 						}
 						//add attack action
-						if((x-11)*(x-4) <= 0 && (y-11)*(y-4) <= 0 && board[x-4][y-4] != p && board[x-4][y-4] != 2*p){
+						if((x-m-3)*(x-4) <= 0 && (y-n-3)*(y-4) <= 0 && board[x-4][y-4] != p && board[x-4][y-4] != 2*p){
 							//just add the element to ans
 							ans.push_back({x-1,y-1,1,x-4,y-4});
 							}
@@ -695,46 +743,46 @@ class environment{
 					}
 					if(d == -1){
 					//forward move
-					if((x-5)*(x+2) <= 0&& (y-9)*(y-2) <= 0&& board[x+2][y-2] == 0){
+					if((x-m+3)*(x+2) <= 0&& (y-n-1)*(y-2) <= 0&& board[x+2][y-2] == 0){
 						//just add the element to ans
 						ans.push_back({x-1,y+1,0,x+2,y-2});
 						
 						//add attack action
-						if((x-4)*(x+3) <= 0 && (y-10)*(y-3) <= 0 && board[x+3][y-3] != p && board[x+3][y-3] != 2*p){
+						if((x-m+4)*(x+3) <= 0 && (y-n-2)*(y-3) <= 0 && board[x+3][y-3] != p && board[x+3][y-3] != 2*p){
 							//just add the element to ans
 							ans.push_back({x+1,y-1,1,x+3,y-3});
 						}
 						//add attack action
-						if((x-3)*(x+4) <= 0 && (y-4)*(y-11) <= 0 && board[x+4][y-4] != p && board[x+4][y-4] != 2*p){
+						if((x-m+5)*(x+4) <= 0 && (y-4)*(y-n-3) <= 0 && board[x+4][y-4] != p && board[x+4][y-4] != 2*p){
 							//just add the element to ans
 							ans.push_back({x+1,y-1,1,x+4,y-4});
 						}
 					}
 					//backward move
-					if((x-9)*(x-2) <= 0 && (y-5)*(y+2) <= 0 && board[x-2][y+2] == 0){
+					if((x-m-1)*(x-2) <= 0 && (y-n+3)*(y+2) <= 0 && board[x-2][y+2] == 0){
 						//just add the element to ans
 						ans.push_back({x+1,y-1,0,x-2,y+2});
 						
 						//add attack action
-						if((x-10)*(x-3) <= 0 && (y-4)*(y+3) <= 0 && board[x-3][y+3] != p && board[x-3][y+3] != 2*p){
+						if((x-m-2)*(x-3) <= 0 && (y-n+4)*(y+3) <= 0 && board[x-3][y+3] != p && board[x-3][y+3] != 2*p){
 							//just add the element to ans
 							ans.push_back({x-1,y+1,1,x-3,y+3});
 						}
 						//add attack action
-						if((x-11)*(x-4) <= 0 && (y-3)*(y+4) <= 0 && board[x-4][y+4] != p && board[x-4][y+4] != 2*p){
+						if((x-m-3)*(x-4) <= 0 && (y-n+5)*(y+4) <= 0 && board[x-4][y+4] != p && board[x-4][y+4] != 2*p){
 							//just add the element to ans
 							ans.push_back({x-1,y+1,1,x-4,y+4});
 						}
 					}
 				}
-			}  
+			}
 			//the final vector
 			vector <tuple<float, vector<int> > >ansf;
 			//now need to go for best actions
 			vector<vector<float> > score;
 			//for 
 		
-			score = vector< vector<float> >(8 , vector<float>(8, 1));
+			score = vector< vector<float> >(m , vector<float>(n, 1));
 			//just do the dot product
 			for (int i = 0; i < ans.size(); i++){
 				vector< vector<int> > t2 = board;
@@ -745,7 +793,7 @@ class environment{
 				else{
 					t2[ans[i][3]][ans[i][4]] = 0;
 				}
-				//float t3 = 0;
+				//float t3 = 0
 				float t3 = eval_state(t2,color);
 				//for (int j = 0 ; j < 8 ; j++){
 				//	for(int k = 0; k < 8 ; k++){
@@ -759,7 +807,7 @@ class environment{
 			else{
 			sort(ansf.begin(), ansf.end());	
 			}
-			return(ansf); 
+			return(ansf);
 		}
 	
 			
@@ -862,8 +910,8 @@ void render(environment e){
 	vector<vector<int> >board = e.board;
 	//just run for loop
 	cout << "--------------------------"<<endl;
-	for(int i = 0; i < board.size() ; i++){
-		for(int j = 0; j < board[0].size(); j++){
+	for(int i = 0; i < board[0].size() ; i++){
+		for(int j = 0; j < board.size(); j++){
 			if(board[j][i] == 1){
 			cout <<"|"<<"AS";}
 			else if(board[j][i] == -1){
@@ -991,33 +1039,11 @@ void search(node* f){
 	}
 }
 int main(){
-	environment e1 = environment(8,8,1);
-	for(int i = 0 ;i < 8 ; i++){
-		for(int j = 0 ; j < 8 ; j++){
-			if (e1.board[i][j] < 2 && e1.board[i][j] > -2){
-				e1.board[i][j] = 0;
-			}
-		}
-	}
-	e1.board[0][1] = -1;
-	e1.board[4][0] = 0;
-	e1.board[2][2] = -1;
-	e1.board[7][1] = 1;
-	e1.board[6][6] = -1;
-	render(e1);
-	node r1 = node(e1);
-	root = &r1;
-	qo = 1;
-	d = 4;
-	search(root);
-	vector<int> y2 = (*root).action;
-	cout << y2.size()<<endl;
-	cout << e1.color<< " "<<e1.possible_moves().size()<<endl;
 	char a1,a2;
 	int x0,y0,x1,y1;
 	int chance, n,m;
 	int t;
-	cin >> chance>>n>>m>>t;
+	cin >> chance>>m>>n>>t;
 	float p = 2*(1.5 - chance);
 	chance = (int) p;
 	environment e = environment(n,m,chance);
@@ -1081,6 +1107,4 @@ int main(){
 	demo.push_back(make_tuple(0.8, vector<int>({1,2,3})));
 	demo.push_back(make_tuple(0.1, vector<int>({4,5,6})));
 	sort(demo.begin(), demo.end(), sortdesc);
-	cout << get<0>(demo[0]);*/
-
-}
+	cout << get<0>(demo[0]);*/}
