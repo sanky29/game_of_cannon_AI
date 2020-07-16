@@ -16,4 +16,4 @@ ct = net cannon difference <br />
 at = net attacking positions difference <br />
 dt = net difference of sum of distances of soldier from opponents townhall <br />
 ## Game Instance
-![alt text](http://url/to/img.png)
+![alt text](instance.jpeg)
